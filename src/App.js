@@ -1,11 +1,11 @@
 import "./App.css"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+
+const apiURL =
+  "https://g.tenor.com/v1/search?q=matrix&key=1GVBZ4H50Q4L&limit=25"
 
 function App() {
-  const [value, updateValue] = useState([
-    "https://media.giphy.com/media/l0MYJnJQ4EiYLxvQ4/giphy.gif",
-  ])
-
+  const [gifs, setGifs] = useState([])
   /**
    * (Déstructuration en javascript) - Même chose que :
    *
@@ -14,10 +14,26 @@ function App() {
    * const updateValue = state[1]
    */
 
+  useEffect(
+    () =>
+      fetch(apiURL)
+        .then((res) => res.json())
+        .then((response) => {
+          const { results } = response
+          const gifs = results.map((image) => image.media[0].mediumgif.url)
+          console.log(gifs.length + " gifs à traiter")
+          setGifs(gifs)
+        }),
+    // en second paramètre on met un array vide pour que useEffect soit appelé une seule fois au chargement de la page
+    []
+  )
+
   return (
     <div className="App">
       <section className="App-content">
-        <img src={value} alt="gif" />
+        {gifs.map((singleGif) => (
+          <img src={singleGif} alt="gif" />
+        ))}
       </section>
     </div>
   )
